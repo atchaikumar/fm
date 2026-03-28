@@ -1,5 +1,9 @@
 #!/usr/bin/liquidsoap
 
+# Allow running as root (required for your WSL session)
+settings.init.allow_root := true
+set("init.allow_root", true)
+
 # Enable Telnet server for metadata updates (optional)
 set("server.telnet.bind_addr", "127.0.0.1")
 set("server.telnet.port", 1234)
