@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+*.egg-info/
+dist/
+.env
+fm_radio.db
+
+# Node / Angular
+node_modules/
+dist/
+.angular/
+*.js.map
+
+# Audio (generated at runtime)
+audio/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Docker
+*.log

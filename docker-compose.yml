@@ -1,0 +1,66 @@
+version: "3.9"
+
+services:
+
+  # ── FastAPI Backend ───────────────────────────────────────────────────
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/.env
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - ICECAST_HOST=icecast
+    depends_on:
+      - redis
+      - icecast
+    volumes:
+      - ./backend:/app
+      - ./backend/audio:/app/audio
+    restart: unless-stopped
+
+  # ── Redis (pub/sub + queues) ──────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+  # ── Icecast2 Audio Stream Server ─────────────────────────────────────
+  icecast:
+    image: moul/icecast
+    ports:
+      - "8080:8000"
+    volumes:
+      - ./icecast.xml:/etc/icecast.xml
+    restart: unless-stopped
+
+  # ── Liquidsoap (audio scheduler / mixer) ─────────────────────────────
+  liquidsoap:
+    image: savonet/liquidsoap:v2.2.5
+    depends_on:
+      - icecast
+    volumes:
+      - ./liquidsoap/radio.liq:/etc/liquidsoap/radio.liq
+      - ./backend/audio:/audio
+    command: liquidsoap /etc/liquidsoap/radio.liq
+    restart: unless-stopped
+
+  # ── Angular Frontend (prod build via nginx) ───────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "4200:80"
+    depends_on:
+      - api
+    restart: unless-stopped
+
+volumes:
+  redis_data:
