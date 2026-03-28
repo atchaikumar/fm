@@ -14,8 +14,8 @@ fallback_audio = blank(duration=1.)
 # Load the AI-generated or requested music
 radio = playlist(music_dir, mode="normal", reload_mode="watch")
 
-# Crossfade between songs smoothly
-radio = crossfade(start_next=2., fade_in=1., fade_out=1., radio)
+# Crossfade between songs smoothly (using defaults to avoid version API issues)
+radio = crossfade(radio)
 
 # Add a cue point for DJ announcements
 dj_voice = fallback([request.queue(id="dj_queue"), blank(duration=1.)])
